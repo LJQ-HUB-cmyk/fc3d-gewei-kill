@@ -8,10 +8,12 @@
 """
 import json
 import os
+from datetime import datetime, timezone, timedelta
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 CACHE_JSON = os.path.join(BASE_DIR, 'cache', 'result.json')
 OUT_HTML = os.path.join(BASE_DIR, '个位杀一码.html')
+BJT = timezone(timedelta(hours=8))   # 页面生成时间用北京时区（云端 Actions 是 UTC）
 
 # 内置样式（复刻通杀一码.css）
 CSS_TEXT = """
@@ -266,6 +268,9 @@ def main():
         raise RuntimeError("未找到 cache/result.json，请先运行 hedge_core.py 或 update.py")
     with open(CACHE_JSON, 'r', encoding='utf-8') as f:
         data = json.load(f)
+    # 页面生成时间覆盖为当前北京时刻：保证手机端看到的"生成于"= 本次实际生成/部署时刻
+    # （result.json 的 generated_at 在缓存命中时会沿用旧值，不能代表页面生成时刻）
+    data['generated_at'] = datetime.now(BJT).strftime('%Y-%m-%d %H:%M:%S')
     html = build_html(data)
     with open(OUT_HTML, 'w', encoding='utf-8') as f:
         f.write(html)

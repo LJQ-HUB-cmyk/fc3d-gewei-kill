@@ -12,11 +12,14 @@ walk-forward：第 t 期预测只用 t-1 / t-2 期数据算特征，严格不偷
 import json
 import os
 import time
+from datetime import datetime, timezone, timedelta
 
 import numpy as np
 
 from engine import load_data, get_next_issue
 from formulas import feat_list, FEAT_VERSION, NF
+
+BJT = timezone(timedelta(hours=8))   # 北京时区：云端 GitHub Actions 是 UTC，必须显式转换
 
 WINDOW = 500          # 回测窗口 / 穷举窗口
 WIN_GRID = (30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 150, 180, 200, 240, 300)   # 网格扫描（15×18=270组合）
@@ -285,7 +288,7 @@ def main():
 
     result = {
         'fingerprint': f"{len(issues)}_{issues[-1]}_{FEAT_VERSION}",
-        'generated_at': time.strftime('%Y-%m-%d %H:%M:%S'),
+        'generated_at': datetime.now(BJT).strftime('%Y-%m-%d %H:%M:%S'),
         'data_info': {'n_issues': len(issues), 'first': issues[0], 'last': issues[-1],
                       'last_draw': f"{hh[-1]}{tt[-1]}{oo[-1]}"},
         'pool_info': {'pool_size_total': pj['stats']['pool_size_total'],
