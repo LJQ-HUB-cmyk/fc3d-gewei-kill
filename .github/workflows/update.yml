@@ -15,6 +15,7 @@ on:
         type: boolean
 
 # 并发保护：三重cron若撞车，取消旧运行，只保留最新一次
+# (2026-08-21) schedule 注册 resync 标记：GitHub 新仓库 schedule 首次注册需数小时，此注释触发 resync
 concurrency:
   group: fc3d-gewei-kill-update
   cancel-in-progress: true
